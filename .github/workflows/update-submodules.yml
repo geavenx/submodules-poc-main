@@ -2,8 +2,8 @@ name: Update Submodules
 
 on:
   schedule:
-    - cron: "0 * * * *" # Runs every hour
-  workflow_dispatch: # Allows manual triggering
+    - cron: "0 * * * *" # runs every hour
+  workflow_dispatch: # allow manual trigger
 
 jobs:
   update_submodules_job:
