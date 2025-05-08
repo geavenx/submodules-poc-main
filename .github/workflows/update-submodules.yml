@@ -1,0 +1,44 @@
+name: Update Submodules
+
+on:
+  schedule:
+    - cron: "0 * * * *" # Runs every hour
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  update_submodules_job:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      SUBMODULE_PATH: "secondary-repo"
+      COMMIT_USER_NAME: "GitHub Actions Bot"
+      COMMIT_USER_EMAIL: "actions@github.com"
+
+    steps:
+      - name: Checkout Parent Repository
+        uses: actions/checkout@v4
+        with:
+          # If you need to push, you might need a PAT if GITHUB_TOKEN permissions are insufficient
+          # or if you're pushing to a protected branch that requires more than default permissions.
+          # For most same-repo pushes, GITHUB_TOKEN with `permissions: contents: write` is enough.
+          # token: ${{ secrets.YOUR_PAT_FOR_PARENT_REPO }} # Only if needed
+          submodules: true # Initializes submodules, but we'll update them next
+
+      - name: Update Submodule
+        run: |
+          git config --global user.name "${{ env.COMMIT_USER_NAME }}"
+          git config --global user.email "${{ env.COMMIT_USER_EMAIL }}"
+
+          echo "Updating submodule at ${{ env.SUBMODULE_PATH }}"
+
+          # Check if there are changes to commit
+          if [[ -n $(git status --porcelain "${{ env.SUBMODULE_PATH }}") ]]; then
+            echo "Changes detected in submodule pointer."
+            git add "${{ env.SUBMODULE_PATH }}"
+            git commit -m "Update submodule ${{ env.SUBMODULE_PATH }} to latest commit"
+            git push
+          else
+            echo "No changes in submodule. Already up-to-date."
+          fi
