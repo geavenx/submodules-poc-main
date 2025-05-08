@@ -1,3 +1,4 @@
 [submodule "secondary-repo"]
 	path = secondary-repo
     url = git@github.com:geavenx/submodules-poc-secondary.git
+	branch = main
